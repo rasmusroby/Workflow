@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <title>Lidl Butiksdrift</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    html{height:100%;overflow-x:hidden;}
+    body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#F4F7FB;overflow-x:hidden;overscroll-behavior-y:none;min-height:100%;width:100%;}
+    input,select,button,textarea{font-family:inherit;font-size:16px;}
+    @keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    var useState = React.useState;
+    var useEffect = React.useEffect;
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var B = "#0050AA", Y = "#FBCB03", R = "#E60028", LT = "#F4F7FB", GR = "#6B7280", GN = "#2E8B3A";
+var ROLE_LABEL = { admin: "Admin", butikschef: "Butikschef", souschef: "Souschef", salgsleder: "Salgsleder", butiksassistent: "Butiksassistent", ungarbejder: "Ungarbejder" };
+var ROLE_COLOR = { admin: "#7C3AED", butikschef: B, souschef: "#0891B2", salgsleder: GN, butiksassistent: GR, ungarbejder: "#F59E0B" };
+var SELECTABLE = ["ungarbejder", "butiksassistent", "salgsleder", "souschef", "butikschef"];
+var MANAGERS = ["admin", "butikschef", "souschef", "salgsleder"];
+var can = function (r) { return ({ kpi: MANAGERS.includes(r), approve: MANAGERS.includes(r), stats: MANAGERS.includes(r), users: MANAGERS.includes(r), settings: MANAGERS.includes(r), lukke: MANAGERS.includes(r), deleteUser: MANAGERS.includes(r) }); };
+var INIT_USERS = [
+    { id: 1, name: "Rasmus Roby", username: "rasmus.roby", password: "123456", role: "souschef", approved: true },
+    { id: 2, name: "Steffen Madsen", username: "steffen.madsen", password: "123456", role: "butikschef", approved: true },
+    { id: 3, name: "Oliver Højsted", username: "oliver.højsted", password: "123456", role: "salgsleder", approved: true },
+];
+var AREAS = [
+    { id: "fg", title: "Frugt & Grønt", emoji: "🥦", color: GN,
+        tasks: [{ id: "fg1", label: "Friskhed" }, { id: "fg2", label: "Vareopfyldning" }, { id: "fg3", label: "Rette skilte" }, { id: "fg4", label: "Feje" }, { id: "fg5", label: "Bestand + TTT (min. 10 stk.)" }, { id: "fg6", label: "Vand blomster" }, { id: "fg7", label: "Fjern dårlige blomster (sættes på blomstervogn, wrappes og køres til PU-zonen)" }],
+        info: "📋 LÆREMÅL: Friskhed · Opbygningsplan · Varerotation & præsentation · Prisændringer · Rengøring · Afskrivninger · Bestandskorrektur\n\n🛠 HJÆLPEVÆRKTØJ: De 10 bud for F&G (lamineret A4-plakat i afdelingen) · F&G opbygningsplan · Honeywell\n\n⏰ MÅLSÆTNING FOR ARBEJDSPROCES\n\n06.00–06.30\n• 100% kvalitetsgennemgang\n• Afskriv korrekt (grøn afskrivningspose eller madspildspose)\n• Rengøring af podester, banantrappe og vægt\n• Opbygning af kampagnespejl\n\n06.30–08.00\n• Opfyldning af varer\n• Kvalitetskontrol af leverede varer (afskrivningsgrund: leveringskvalitet)\n• Prisskilte og rabat\n\n08.30\n• Kontrol af afdeling\n• Opfyldning af poser\n• Kanter og gulv fejes og vaskes\n\n⚠️ FØR KL. 10.30 (VIGTIGT!)\n• Alle afskrivninger er registreret\n• Bestandskorrektur på F&G er udført\n\n🏗 KAMPAGNEOPBYGNING\n• Følg altid opbygningsplanen i kampagnemappen\n• GK-placeringer og blokopbygning · Max 2 LOT-numre i salg\n• Alle varer i salg, T-varer og kasser i smalt led\n• Prisnedsættelse og rabatmærkning · Trimning\n\n✅ FÆRDIG AFDELING\n• \"Gold in, Gold out\"\n• Bestandskorrektur laves hver dag inden 10.30 (efter afskrivninger)\n• Trim og tjek friskhed flere gange dagligt\n• Skriv under på friskhedskontrolskemaet efter hvert kvalitetstjek" },
+    { id: "koed", title: "Kød", emoji: "🥩", color: R,
+        tasks: [{ id: "k1", label: "Vareopfyldning" }, { id: "k2", label: "SV-mærker" }, { id: "k3", label: "Skilte" }, { id: "k4", label: "Datovarer" }, { id: "k5", label: "Bestand + TTT (min. 10 stk.)" }],
+        info: "Rotation: nyeste varer bagerst. Datovarer fjernes og afskrives korrekt." },
+    { id: "broed", title: "Brød", emoji: "🍞", color: "#D4700A",
+        tasks: [{ id: "br1", label: "Opfyld leveret brød" }, { id: "br2", label: "Tjek datovarer" }, { id: "br3", label: "Bestand + TTT (min. 5 stk.)" }],
+        info: "Tjek altid datovarer og placer nye varer bagerst i hylden." },
+    { id: "bo1", title: "BakeOff Morgen", emoji: "🥐", color: "#E8A020",
+        tasks: [{ id: "b1", label: "Bagning" }, { id: "b2", label: "Opfyldning af BO (lægges pænt)" }, { id: "b3", label: "Opfyldning af poser og handsker" }, { id: "b4", label: "Skilte" }, { id: "b5", label: "Oprydning og rengøring i BO og fryser" }, { id: "b6", label: "Feje i BakeOff og foran BakeOff i butikken" }, { id: "b7", label: "Man/Ons/Fre: Tøm TKT-bokse" }],
+        info: "Bageskema 100%. Honeywell (6)→(2). Varer ved -18°C." },
+    { id: "bo2", title: "BakeOff kl. 13:00", emoji: "🥖", color: B,
+        tasks: [{ id: "c1", label: "Bage efter bageskema (2. bagning)" }, { id: "c2", label: "Pakke til i morgen" }, { id: "c3", label: "Opfyldning af BakeOff (lægges pænt)" }, { id: "c4", label: "Opfyldning af handsker og poser" }, { id: "c5", label: "Oprydning og rengøring i BakeOff og fryser" }, { id: "c6", label: "Feje i BakeOff og foran BakeOff i butik" }],
+        info: "Go & See kl. 13:00. Fejlartikler efterbages frem til 18:00." },
+    { id: "oevrige", title: "Øvrige Opgaver", emoji: "📋", color: "#7C3AED",
+        tasks: [{ id: "o1", label: "⏰ HACCP (inden kl. 10:00)" }, { id: "o2", label: "⏰ Afsend Bestand+TTT friskvarer (F/G, Kød, Brød) senest kl. 10:00" }, { id: "o3", label: "KHG (Friskhedskontrol)" }, { id: "o4", label: "Tørvarer" }, { id: "o5", label: "⏰ Bestand+TTT øvrige (Hovedbestilling, Frost, Køl, BakeOff) senest kl. 16:00" }, { id: "o6", label: "Gang 1 Koncept (min. 4x dagligt: morgen, middag, eftermiddag, aften)" }, { id: "o7", label: "⏰ Afsend KPI (senest kl. 16:00)" }, { id: "o8", label: "⏰ Efterbagning (maks. 3 fejlartikler frem til kl. 18:00)" }],
+        info: "HACCP er lovpligtigt — udfyldes dagligt inden kl. 10:00. Bestand+TTT friskvarer afsendes senest kl. 10:00. Øvrige bestand senest kl. 16:00. Gang 1 Koncept minimum 4 gange dagligt." },
+];
+var KPI_ROWS = ["Omsætning", "Timer", "Solgte stk.", "Stk. produktivitet"];
+var TTT_CHECKS = ["Bestandskorrekturer på friskvarer inden kl. 10:30", "Dagens artikler på optællingslisten optalt", "Tyk, tynd og tom gennemført", "Gang 1 ok"];
+var TTT_DEPTS = ["Frugt & Grønt", "Kød", "Brød", "Køl", "Frost", "Bakeoff", "Hovedbestilling"];
+var todayStr = function () { return new Date().toLocaleDateString("da-DK"); };
+var next7 = function () { return Array.from({ length: 7 }, function (_, i) { var d = new Date(); d.setDate(d.getDate() + i); return { key: d.toLocaleDateString("da-DK"), label: d.toLocaleDateString("da-DK", { weekday: "short", day: "numeric", month: "short" }) }; }); };
+function LidlEmblem(_a) {
+    var _b = _a.size, size = _b === void 0 ? 42 : _b;
+    return (React.createElement("div", { style: { width: size, height: size, borderRadius: "50%", background: Y, border: "3px solid ".concat(R), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } },
+        React.createElement("div", { style: { width: size * 0.68, height: size * 0.68, borderRadius: "50%", background: "#fff", border: "2px solid ".concat(B), display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2 } },
+            React.createElement("div", { style: { fontSize: size * 0.16, fontWeight: 900, color: B, lineHeight: 1 } }, "lidl"),
+            React.createElement("div", { style: { width: size * 0.4, height: 2, background: R, borderRadius: 1 } }),
+            React.createElement("div", { style: { width: size * 0.4, height: 2, background: B, borderRadius: 1 } }))));
+}
+function Badge(_a) {
+    var role = _a.role;
+    return React.createElement("span", { style: { padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: "".concat(ROLE_COLOR[role], "22"), color: ROLE_COLOR[role] } }, ROLE_LABEL[role]);
+}
+function CircleProg(_a) {
+    var pct = _a.pct, color = _a.color, approved = _a.approved;
+    var r = 16, circ = 2 * Math.PI * r, dash = (pct / 100) * circ;
+    return (React.createElement("svg", { width: "40", height: "40", viewBox: "0 0 40 40" },
+        React.createElement("circle", { cx: "20", cy: "20", r: r, fill: "none", stroke: "#E5E9F0", strokeWidth: "4" }),
+        React.createElement("circle", { cx: "20", cy: "20", r: r, fill: "none", stroke: approved ? GN : color, strokeWidth: "4", strokeDasharray: "".concat(dash, " ").concat(circ), strokeLinecap: "round", transform: "rotate(-90 20 20)", style: { transition: "stroke-dasharray 0.4s" } }),
+        approved ? React.createElement("text", { x: "20", y: "25", textAnchor: "middle", fill: GN, fontSize: "14", fontWeight: "900" }, "\u2713") : React.createElement("text", { x: "20", y: "24", textAnchor: "middle", fill: color, fontSize: "9", fontWeight: "800" },
+            Math.round(pct),
+            "%")));
+}
+function Inp(_a) {
+    var label = _a.label, value = _a.value, onChange = _a.onChange, _b = _a.type, type = _b === void 0 ? "text" : _b, _c = _a.placeholder, placeholder = _c === void 0 ? "" : _c;
+    return (React.createElement("div", { style: { marginBottom: 14 } },
+        label && React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: GR, marginBottom: 5, textTransform: "uppercase", letterSpacing: 0.8 } }, label),
+        React.createElement("input", { type: type, value: value, onChange: function (e) { return onChange(e.target.value); }, placeholder: placeholder, style: { width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E9F0", fontSize: 14, background: "#fff", outline: "none", boxSizing: "border-box", color: "#2d3748" } })));
+}
+function PBtn(_a) {
+    var label = _a.label, onClick = _a.onClick, disabled = _a.disabled, _b = _a.color, color = _b === void 0 ? B : _b, _c = _a.full, full = _c === void 0 ? false : _c, _d = _a.small, small = _d === void 0 ? false : _d;
+    return (React.createElement("button", { onClick: onClick, disabled: disabled, style: { width: full ? "100%" : "auto", padding: small ? "6px 14px" : "11px 20px", borderRadius: 10, border: "none", background: disabled ? "#F0F2F5" : color, color: disabled ? "#A0AAB8" : "#fff", fontWeight: 800, fontSize: small ? 12 : 14, cursor: disabled ? "not-allowed" : "pointer", boxShadow: !disabled ? "0 3px 10px ".concat(color, "40") : "none", transition: "all 0.2s" } }, label));
+}
+function OBtn(_a) {
+    var label = _a.label, onClick = _a.onClick, _b = _a.color, color = _b === void 0 ? B : _b, _c = _a.small, small = _c === void 0 ? false : _c;
+    return (React.createElement("button", { onClick: onClick, style: { padding: small ? "5px 12px" : "9px 16px", borderRadius: 10, border: "2px solid ".concat(color), background: "#fff", color: color, fontWeight: 700, fontSize: small ? 12 : 13, cursor: "pointer" } }, label));
+}
+function ComingSoon(_a) {
+    var _b = _a.icon, icon = _b === void 0 ? "🚧" : _b, title = _a.title, _c = _a.sub, sub = _c === void 0 ? "Tilføjes når indhold er klar" : _c;
+    return (React.createElement("div", { style: { textAlign: "center", padding: "60px 20px" } },
+        React.createElement("div", { style: { fontSize: 48, marginBottom: 12 } }, icon),
+        React.createElement("div", { style: { fontWeight: 800, fontSize: 17, color: "#2d3748", marginBottom: 6 } }, title),
+        React.createElement("div", { style: { color: GR, fontSize: 13 } }, sub)));
+}
+function NotifBell(_a) {
+    var count = _a.count, onClick = _a.onClick, hasHome = _a.hasHome;
+    var _b = __read(useState(false), 2), pulse = _b[0], setPulse = _b[1];
+    useEffect(function () { if (count > 0) {
+        setPulse(true);
+        var t_1 = setTimeout(function () { return setPulse(false); }, 600);
+        return function () { return clearTimeout(t_1); };
+    } }, [count]);
+    return (React.createElement("button", { onClick: onClick, style: { position: "fixed", bottom: hasHome ? 78 : 24, left: 20, width: 52, height: 52, borderRadius: "50%", background: count > 0 ? B : "#fff", border: count > 0 ? "none" : "2px solid #E5E9F0", cursor: "pointer", boxShadow: count > 0 ? "0 4px 18px rgba(0,80,170,0.40)" : "0 2px 10px rgba(0,0,0,0.10)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 150, transition: "all 0.25s", transform: pulse ? "scale(1.18)" : "scale(1)" } },
+        React.createElement("span", { style: { fontSize: 22, lineHeight: 1 } }, count > 0 ? "🔔" : "🔕"),
+        count > 0 && React.createElement("div", { style: { position: "absolute", top: -3, right: -3, minWidth: 20, height: 20, borderRadius: 10, background: R, color: "#fff", fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", border: "2.5px solid #fff", padding: "0 4px", lineHeight: 1 } }, count > 9 ? "9+" : count)));
+}
+var NOTIF_COLORS = { warning: { bg: "#FFFBEA", border: Y, text: "#92600A" }, error: { bg: "#FFF0F0", border: R + "60", text: R }, success: { bg: "#F0FAF2", border: "#C3E6CB", text: GN }, info: { bg: "#EFF6FF", border: B + "40", text: B } };
+function NotifPanel(_a) {
+    var notifs = _a.notifs, onClose = _a.onClose, onDismiss = _a.onDismiss, dismissed = _a.dismissed;
+    var visible = notifs.filter(function (n) { return !dismissed.includes(n.key); });
+    return (React.createElement(React.Fragment, null,
+        React.createElement("div", { onClick: onClose, style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 400 } }),
+        React.createElement("div", { style: { position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "22px 22px 0 0", padding: "0 16px 36px", zIndex: 401, maxHeight: "72vh", overflowY: "auto", boxShadow: "0 -8px 40px rgba(0,0,0,0.18)", animation: "slideUp 0.28s ease" } },
+            React.createElement("div", { style: { position: "sticky", top: 0, background: "#fff", paddingTop: 14, paddingBottom: 12, zIndex: 1 } },
+                React.createElement("div", { style: { width: 40, height: 4, background: "#E5E9F0", borderRadius: 2, margin: "0 auto 14px" } }),
+                React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
+                    React.createElement("div", { style: { fontWeight: 900, fontSize: 17, color: "#2d3748" } },
+                        "\uD83D\uDD14 Notifikationer",
+                        visible.length > 0 && React.createElement("span", { style: { marginLeft: 8, fontSize: 13, fontWeight: 700, color: GR } },
+                            "(",
+                            visible.length,
+                            ")")),
+                    React.createElement("button", { onClick: onClose, style: { background: LT, border: "none", borderRadius: 8, padding: "6px 12px", cursor: "pointer", color: GR, fontWeight: 700, fontSize: 13 } }, "Luk"))),
+            visible.length === 0 ? (React.createElement("div", { style: { textAlign: "center", padding: "40px 0 20px", color: GR } },
+                React.createElement("div", { style: { fontSize: 42, marginBottom: 10 } }, "\u2705"),
+                React.createElement("div", { style: { fontWeight: 800, fontSize: 15, color: "#2d3748", marginBottom: 4 } }, "Alt er i orden!"),
+                React.createElement("div", { style: { fontSize: 13 } }, "Ingen aktive notifikationer"))) : (visible.map(function (n, i) {
+                var c = NOTIF_COLORS[n.type] || NOTIF_COLORS.info;
+                return (React.createElement("div", { key: n.key, style: { background: c.bg, border: "1.5px solid ".concat(c.border), borderRadius: 14, padding: "13px 14px", marginBottom: 10, display: "flex", alignItems: "flex-start", gap: 12, animation: "fadeIn 0.2s ease ".concat(i * 0.06, "s both") } },
+                    React.createElement("span", { style: { fontSize: 22, lineHeight: 1, flexShrink: 0, marginTop: 1 } }, n.icon),
+                    React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+                        React.createElement("div", { style: { fontWeight: 800, fontSize: 13, color: "#2d3748" } }, n.title),
+                        React.createElement("div", { style: { fontSize: 12, color: "#4A5568", marginTop: 3, lineHeight: 1.5 } }, n.body)),
+                    React.createElement("button", { onClick: function () { return onDismiss(n.key); }, style: { background: "none", border: "none", cursor: "pointer", color: c.text, fontSize: 16, fontWeight: 900, lineHeight: 1, padding: "2px 4px", opacity: 0.6, flexShrink: 0 } }, "\u00D7")));
+            })))));
+}
+function LoginScreen(_a) {
+    var users = _a.users, setUsers = _a.setUsers, onLogin = _a.onLogin;
+    var _b = __read(useState("login"), 2), mode = _b[0], setMode = _b[1];
+    var _c = __read(useState(""), 2), un = _c[0], setUn = _c[1], _d = __read(useState(""), 2), pw = _d[0], setPw = _d[1], _e = __read(useState(""), 2), name = _e[0], setName = _e[1], _f = __read(useState("butiksassistent"), 2), role = _f[0], setRole = _f[1], _g = __read(useState(""), 2), err = _g[0], setErr = _g[1], _h = __read(useState(false), 2), sent = _h[0], setSent = _h[1];
+    var doLogin = function () { var u = users.find(function (x) { return x.username === un && x.password === pw; }); if (!u) {
+        setErr("Forkert brugernavn eller adgangskode");
+        return;
+    } if (!u.approved) {
+        setErr("Din konto afventer godkendelse");
+        return;
+    } onLogin(u); };
+    var doRegister = function () { if (!name.trim() || !un.trim() || !pw.trim()) {
+        setErr("Udfyld alle felter");
+        return;
+    } if (users.find(function (x) { return x.username === un; })) {
+        setErr("Brugernavnet er allerede i brug");
+        return;
+    } setUsers(function (p) { return __spreadArray(__spreadArray([], __read(p), false), [{ id: Date.now(), name: name.trim(), username: un.trim(), password: pw, role: role, approved: false }], false); }); setSent(true); setErr(""); };
+    if (sent)
+        return (React.createElement("div", { style: { minHeight: "100vh", background: LT, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 } },
+            React.createElement(LidlEmblem, { size: 64 }),
+            React.createElement("div", { style: { marginTop: 20, fontWeight: 800, fontSize: 20, color: "#2d3748", textAlign: "center" } }, "Anmodning sendt!"),
+            React.createElement("div", { style: { color: GR, marginTop: 8, textAlign: "center", fontSize: 14, maxWidth: 280 } }, "Din konto afventer godkendelse fra en leder."),
+            React.createElement("div", { style: { marginTop: 24 } },
+                React.createElement(PBtn, { label: "Tilbage til login", onClick: function () { setSent(false); setMode("login"); }, color: B }))));
+    return (React.createElement("div", { style: { minHeight: "100vh", background: LT, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 } },
+        React.createElement("div", { style: { marginBottom: 20, display: "flex", flexDirection: "column", alignItems: "center", gap: 10 } },
+            React.createElement(LidlEmblem, { size: 64 }),
+            React.createElement("div", { style: { fontWeight: 900, fontSize: 22, color: B } }, "Butiksdrift")),
+        React.createElement("div", { style: { background: "#fff", borderRadius: 20, padding: 24, width: "100%", maxWidth: 360, boxShadow: "0 4px 24px rgba(0,80,170,0.12)" } },
+            React.createElement("div", { style: { display: "flex", background: LT, borderRadius: 12, padding: 4, marginBottom: 20, gap: 4 } }, [["login", "Log ind"], ["register", "Opret konto"]].map(function (_a) {
+                var _b = __read(_a, 2), m = _b[0], l = _b[1];
+                return (React.createElement("button", { key: m, onClick: function () { setMode(m); setErr(""); }, style: { flex: 1, padding: "8px", borderRadius: 9, border: "none", cursor: "pointer", background: mode === m ? "#fff" : "transparent", fontWeight: 700, fontSize: 13, color: mode === m ? B : GR, boxShadow: mode === m ? "0 1px 4px rgba(0,0,0,0.1)" : "none", transition: "all 0.2s" } }, l));
+            })),
+            err && React.createElement("div", { style: { background: "#FFF0F0", border: "1px solid ".concat(R, "40"), borderRadius: 8, padding: "8px 12px", color: R, fontSize: 13, fontWeight: 600, marginBottom: 14 } }, err),
+            mode === "login" ? (React.createElement(React.Fragment, null,
+                React.createElement(Inp, { label: "Brugernavn", value: un, onChange: setUn, placeholder: "Indtast brugernavn" }),
+                React.createElement(Inp, { label: "Adgangskode", value: pw, onChange: setPw, type: "password", placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022" }),
+                React.createElement(PBtn, { label: "Log ind", onClick: doLogin, color: B, full: true }))) : (React.createElement(React.Fragment, null,
+                React.createElement(Inp, { label: "Fulde navn", value: name, onChange: setName, placeholder: "Dit navn" }),
+                React.createElement(Inp, { label: "Brugernavn", value: un, onChange: setUn, placeholder: "V\u00E6lg et brugernavn" }),
+                React.createElement(Inp, { label: "Adgangskode", value: pw, onChange: setPw, type: "password", placeholder: "V\u00E6lg en adgangskode" }),
+                React.createElement("div", { style: { marginBottom: 14 } },
+                    React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: GR, marginBottom: 5, textTransform: "uppercase", letterSpacing: 0.8 } }, "Rolle"),
+                    React.createElement("select", { value: role, onChange: function (e) { return setRole(e.target.value); }, style: { width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E9F0", fontSize: 14, background: "#fff", color: "#2d3748" } }, SELECTABLE.map(function (r) { return React.createElement("option", { key: r, value: r }, ROLE_LABEL[r]); }))),
+                React.createElement(PBtn, { label: "Send anmodning", onClick: doRegister, color: B, full: true }))))));
+}
+function HomeScreen(_a) {
+    var user = _a.user, checked = _a.checked, setChecked = _a.setChecked, approvals = _a.approvals, setApprovals = _a.setApprovals;
+    var _b = __read(useState({ fg: true, bo1: true }), 2), expanded = _b[0], setExpanded = _b[1];
+    var _c = __read(useState(null), 2), infoOpen = _c[0], setInfoOpen = _c[1];
+    var _d = __read(useState({}), 2), feedbackDraft = _d[0], setFeedbackDraft = _d[1];
+    var p = can(user.role);
+    var toggle = function (tid, aid) { if (!approvals[aid])
+        setChecked(function (prev) {
+            var _a;
+            return (__assign(__assign({}, prev), (_a = {}, _a[tid] = !prev[tid], _a)));
+        }); };
+    var getP = function (area) { var done = area.tasks.filter(function (t) { return checked[t.id]; }).length; return { done: done, total: area.tasks.length, pct: area.tasks.length ? (done / area.tasks.length) * 100 : 0 }; };
+    var allDone = function (area) { return getP(area).done === area.tasks.length; };
+    var totalDone = AREAS.reduce(function (a, ar) { return a + getP(ar).done; }, 0);
+    var totalTasks = AREAS.reduce(function (a, ar) { return a + ar.tasks.length; }, 0);
+    var totalApproved = AREAS.filter(function (a) { return approvals[a.id]; }).length;
+    var approve = function (aid) { return setApprovals(function (prev) {
+        var _a;
+        return (__assign(__assign({}, prev), (_a = {}, _a[aid] = { by: user.name, at: new Date().toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit" }), feedback: feedbackDraft[aid] || "" }, _a)));
+    }); };
+    var revoke = function (aid) { return setApprovals(function (prev) { var n = __assign({}, prev); delete n[aid]; return n; }); };
+    return (React.createElement("div", { style: { paddingBottom: 80 } },
+        React.createElement("div", { style: { margin: "14px 16px 0", background: "#fff", borderRadius: 14, padding: "14px 16px", boxShadow: "0 1px 6px rgba(0,0,0,0.06)", display: "flex", alignItems: "center", gap: 16 } },
+            React.createElement("div", { style: { flex: 1 } },
+                React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: GR, textTransform: "uppercase", letterSpacing: 1 } }, "Fremgang i dag"),
+                React.createElement("div", { style: { fontSize: 28, fontWeight: 900, color: B, lineHeight: 1.1 } },
+                    totalDone,
+                    React.createElement("span", { style: { fontSize: 14, color: GR, fontWeight: 600 } },
+                        "/",
+                        totalTasks)),
+                React.createElement("div", { style: { fontSize: 11, color: GR } }, "opgaver gennemf\u00F8rt")),
+            React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end", maxWidth: 160 } }, AREAS.map(function (area) { var pct = getP(area).pct; var ap = !!approvals[area.id]; return React.createElement("div", { key: area.id, style: { textAlign: "center" } },
+                React.createElement("div", { style: { fontSize: 18 } }, area.emoji),
+                React.createElement("div", { style: { width: 8, height: 8, borderRadius: "50%", margin: "3px auto 0", background: ap ? GN : pct === 100 ? Y : pct > 0 ? area.color : "#E5E9F0" } })); }))),
+        p.approve && (React.createElement("div", { style: { padding: "14px 16px 0", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 } }, AREAS.map(function (area) {
+            var _a = getP(area), done = _a.done, total = _a.total, pct = _a.pct;
+            var ap = !!approvals[area.id];
+            return (React.createElement("div", { key: area.id, onClick: function () { return setExpanded(function (prev) {
+                    var _a;
+                    return (__assign(__assign({}, prev), (_a = {}, _a[area.id] = true, _a)));
+                }); }, style: { background: "#fff", borderRadius: 12, padding: "10px 6px", textAlign: "center", border: ap ? "2px solid " + GN : "2px solid transparent", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", cursor: "pointer" } },
+                React.createElement("div", { style: { fontSize: 20 } }, area.emoji),
+                React.createElement(CircleProg, { pct: pct, color: area.color, approved: ap }),
+                React.createElement("div", { style: { fontSize: 10, fontWeight: 700, color: ap ? GN : GR, marginTop: 2 } }, ap ? "Godkendt" : "".concat(done, "/").concat(total))));
+        }))),
+        React.createElement("div", { style: { padding: "14px 16px 0" } }, AREAS.map(function (area) {
+            var _a = getP(area), done = _a.done, total = _a.total, pct = _a.pct;
+            var isEx = !!expanded[area.id];
+            var ap = approvals[area.id];
+            var canAp = p.approve && allDone(area) && !ap;
+            return (React.createElement("div", { key: area.id, style: { background: "#fff", borderRadius: 16, marginBottom: 12, overflow: "hidden", border: ap ? "2px solid " + GN : "2px solid transparent", boxShadow: ap ? "0 2px 16px rgba(46,139,58,0.15)" : "0 1px 8px rgba(0,0,0,0.07)" } },
+                React.createElement("div", { onClick: function () { return setExpanded(function (prev) {
+                        var _a;
+                        return (__assign(__assign({}, prev), (_a = {}, _a[area.id] = !prev[area.id], _a)));
+                    }); }, style: { padding: "14px 16px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", borderBottom: isEx ? "1px solid #F0F2F5" : "none", background: ap ? "rgba(46,139,58,0.04)" : "#fff" } },
+                    React.createElement("div", { style: { width: 46, height: 46, borderRadius: 13, background: "".concat(area.color, "18"), display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 } }, area.emoji),
+                    React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+                        React.createElement("div", { style: { fontWeight: 800, fontSize: 15 } }, area.title),
+                        React.createElement("div", { style: { marginTop: 6, height: 4, background: "#F0F2F5", borderRadius: 2 } },
+                            React.createElement("div", { style: { height: "100%", borderRadius: 2, width: "".concat(pct, "%"), background: ap ? GN : area.color, transition: "width 0.4s" } }))),
+                    React.createElement(CircleProg, { pct: pct, color: area.color, approved: !!ap }),
+                    React.createElement("div", { style: { color: GR, fontSize: 11 } }, isEx ? "▲" : "▼")),
+                isEx && (React.createElement("div", { style: { padding: "6px 16px 14px" } },
+                    area.tasks.map(function (task, idx) {
+                        var isDone = !!checked[task.id];
+                        return (React.createElement("div", { key: task.id, onClick: function () { return toggle(task.id, area.id); }, style: { display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: idx < area.tasks.length - 1 ? "1px solid #F5F6F8" : "none", cursor: ap ? "default" : "pointer" } },
+                            React.createElement("div", { style: { width: 24, height: 24, borderRadius: 7, flexShrink: 0, border: isDone ? "none" : "2px solid ".concat(area.color), background: isDone ? area.color : "#fff", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", boxShadow: isDone ? "0 2px 6px ".concat(area.color, "40") : "none" } }, isDone && React.createElement("span", { style: { color: "#fff", fontSize: 14, fontWeight: 900 } }, "\u2713")),
+                            React.createElement("span", { style: { fontSize: 14, flex: 1, fontWeight: isDone ? 600 : 400, color: isDone ? "#A0AAB8" : "#2d3748", textDecoration: isDone ? "line-through" : "none" } }, task.label)));
+                    }),
+                    React.createElement("div", { style: { marginTop: 10 } },
+                        React.createElement("button", { onClick: function () { return setInfoOpen(infoOpen === area.id ? null : area.id); }, style: { background: LT, border: "none", borderRadius: 8, color: B, fontSize: 12, fontWeight: 700, padding: "7px 14px", cursor: "pointer" } }, "\u2139 Faglig info & tr\u00E6nerkort"),
+                        infoOpen === area.id && React.createElement("div", { style: { marginTop: 8, padding: "12px 14px", background: LT, borderRadius: 10, fontSize: 13, color: "#4A5568", lineHeight: 1.7, borderLeft: "4px solid ".concat(area.color), whiteSpace: "pre-line" } }, area.info)),
+                    p.approve && (React.createElement("div", { style: { marginTop: 12 } }, ap ? (React.createElement("div", { style: { background: "#F0FAF2", borderRadius: 12, padding: "12px 14px", border: "1px solid #C3E6CB" } },
+                        React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: ap.feedback ? 8 : 0 } },
+                            React.createElement("div", null,
+                                React.createElement("div", { style: { color: GN, fontWeight: 800, fontSize: 14 } },
+                                    "\u2713 Godkendt af ",
+                                    ap.by),
+                                React.createElement("div", { style: { color: GR, fontSize: 11, marginTop: 2 } },
+                                    "kl. ",
+                                    ap.at)),
+                            React.createElement(OBtn, { label: "Fortryd", onClick: function () { return revoke(area.id); }, color: GR, small: true })),
+                        ap.feedback && React.createElement("div", { style: { fontSize: 12, color: "#4A5568", background: "#fff", borderRadius: 8, padding: "8px 10px", borderLeft: "3px solid ".concat(GN), lineHeight: 1.5 } },
+                            "\uD83D\uDCAC ",
+                            ap.feedback))) : (React.createElement(React.Fragment, null,
+                        canAp && React.createElement("div", { style: { marginBottom: 8 } },
+                            React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: GR, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 5 } }, "Feedback til medarbejder"),
+                            React.createElement("textarea", { value: feedbackDraft[area.id] || "", onChange: function (e) { return setFeedbackDraft(function (p) {
+                                    var _a;
+                                    return (__assign(__assign({}, p), (_a = {}, _a[area.id] = e.target.value, _a)));
+                                }); }, placeholder: "Skriv evt. feedback eller kommentar...", rows: 2, style: { width: "100%", padding: "9px 12px", borderRadius: 10, border: "1.5px solid #E5E9F0", fontSize: 13, resize: "none", outline: "none", color: "#2d3748", fontFamily: "inherit", boxSizing: "border-box" } })),
+                        React.createElement(PBtn, { label: allDone(area) ? "✓ Godkend område" : "".concat(total - done, " opgave").concat(total - done !== 1 ? "r" : "", " mangler"), onClick: function () { return canAp && approve(area.id); }, disabled: !canAp, color: B, full: true }))))),
+                    !p.approve && ap && React.createElement("div", { style: { marginTop: 12, background: "#F0FAF2", borderRadius: 12, padding: "11px 14px", border: "1px solid #C3E6CB" } },
+                        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: ap.feedback ? 8 : 0 } },
+                            React.createElement("span", { style: { fontSize: 20 } }, "\u2705"),
+                            React.createElement("div", null,
+                                React.createElement("div", { style: { color: GN, fontWeight: 800, fontSize: 13 } },
+                                    "Godkendt af ",
+                                    ap.by),
+                                React.createElement("div", { style: { color: GR, fontSize: 11 } },
+                                    "kl. ",
+                                    ap.at))),
+                        ap.feedback && React.createElement("div", { style: { fontSize: 12, color: "#4A5568", background: "#fff", borderRadius: 8, padding: "8px 10px", borderLeft: "3px solid ".concat(GN), lineHeight: 1.5 } },
+                            "\uD83D\uDCAC ",
+                            ap.feedback)),
+                    !p.approve && !ap && allDone(area) && React.createElement("div", { style: { marginTop: 12, background: "#FFFBEA", borderRadius: 12, padding: "11px 14px", border: "1px solid ".concat(Y), display: "flex", alignItems: "center", gap: 10 } },
+                        React.createElement("span", null, "\u23F3"),
+                        React.createElement("div", { style: { color: "#92600A", fontWeight: 700, fontSize: 13 } }, "Afventer godkendelse fra leder"))))));
+        })),
+        React.createElement("div", { style: { position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderTop: "3px solid ".concat(Y), padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 -4px 16px rgba(0,0,0,0.08)" } },
+            React.createElement("div", { style: { fontSize: 12, color: GR, fontWeight: 600 } }, totalApproved === AREAS.length && totalApproved > 0 ? "🎉 Alle områder godkendt!" : "".concat(totalApproved, "/").concat(AREAS.length, " omr\u00E5der godkendt")),
+            React.createElement("div", { style: { display: "flex", gap: 5, flexWrap: "wrap", justifyContent: "flex-end", maxWidth: 180 } }, AREAS.map(function (area) { return (React.createElement("div", { key: area.id, style: { width: 28, height: 28, borderRadius: 7, fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", background: approvals[area.id] ? GN : getP(area).pct === 100 ? Y : "#F0F2F5" } }, area.emoji)); })))));
+}
+function KPIScreen(_a) {
+    var user = _a.user, adminEmail = _a.adminEmail;
+    var initN = function () { return KPI_ROWS.reduce(function (a, r) {
+        var _a;
+        return (__assign(__assign({}, a), (_a = {}, _a[r] = { plan: "", real: "" }, _a)));
+    }, {}); };
+    var _b = __read(useState(initN), 2), noegletal = _b[0], setNoegletal = _b[1];
+    var _c = __read(useState({}), 2), checks = _c[0], setChecks = _c[1];
+    var _d = __read(useState({}), 2), counts = _d[0], setCounts = _d[1];
+    var setN = function (row, field, val) { return setNoegletal(function (p) {
+        var _a, _b;
+        return (__assign(__assign({}, p), (_a = {}, _a[row] = __assign(__assign({}, p[row]), (_b = {}, _b[field] = val, _b)), _a)));
+    }); };
+    var buildEmail = function () {
+        var lines = [
+            "DAGLIG KPI OPFØLGNING - LIDL",
+            "================================",
+            "Dato: ".concat(todayStr()),
+            "Udfyldt af: ".concat(user.name),
+            "Tidspunkt: ".concat(new Date().toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit" })),
+            "",
+            "================================",
+            "1. NOEGLETAL (I GAR)",
+            "================================",
+        ];
+        KPI_ROWS.forEach(function (r) {
+            lines.push("".concat(r));
+            lines.push("  Planlagt:    ".concat(noegletal[r].plan || "-"));
+            lines.push("  Realiseret:  ".concat(noegletal[r].real || "-"));
+            lines.push("");
+        });
+        lines.push("================================", "2. TJEKLISTE (I DAG)", "================================");
+        TTT_CHECKS.forEach(function (c) { return lines.push("".concat(checks[c] ? "[OK]" : "[NEJ]", "  ").concat(c)); });
+        lines.push("", "================================", "3. TTT OPTAELLINGER PER AFDELING", "================================");
+        TTT_DEPTS.forEach(function (d) { return lines.push("".concat(d, ": ").concat(counts[d] || "0", " stk.")); });
+        return lines.join("\n");
+    };
+    var _e = __read(useState(false), 2), showMailChoice = _e[0], setShowMailChoice = _e[1];
+    var sendKPI = function () { return setShowMailChoice(true); };
+    var doSend = function (useGmail) {
+        var subject = "KPI Opf\u00F8lgning - ".concat(todayStr(), " - ").concat(user.name);
+        var body = buildEmail();
+        setShowMailChoice(false);
+        window.location.href = "mailto:".concat(adminEmail, "?subject=").concat(encodeURIComponent(subject), "&body=").concat(encodeURIComponent(body));
+    };
+    var getGmailHref = function () {
+        var subject = "KPI Opf\u00F8lgning - ".concat(todayStr(), " - ").concat(user.name);
+        var body = buildEmail();
+        return "googlegmail://co?to=".concat(encodeURIComponent(adminEmail), "&subject=").concat(encodeURIComponent(subject), "&body=").concat(encodeURIComponent(body));
+    };
+    return (React.createElement("div", { style: { padding: "16px", paddingBottom: 40 } },
+        React.createElement("div", { style: { background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 1px 8px rgba(0,0,0,0.07)", marginBottom: 12 } },
+            React.createElement("div", { style: { fontWeight: 900, fontSize: 18, color: "#2d3748", marginBottom: 4 } }, "\uD83D\uDCCB Daglig KPI Opf\u00F8lgning"),
+            React.createElement("div", { style: { fontSize: 13, color: GR } },
+                "Dato: ",
+                todayStr(),
+                " \u00B7 Udfyldt af: ",
+                React.createElement("b", null, user.name))),
+        React.createElement("div", { style: { background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 1px 8px rgba(0,0,0,0.07)", marginBottom: 12 } },
+            React.createElement("div", { style: { fontWeight: 800, fontSize: 15, color: "#2d3748", marginBottom: 14 } }, "1. N\u00F8gletal (i g\u00E5r)"),
+            React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 8, alignItems: "center" } },
+                React.createElement("div", { style: { flex: 1, fontSize: 11, fontWeight: 700, color: GR, textTransform: "uppercase" } }, "KPI"),
+                React.createElement("div", { style: { width: 80, fontSize: 11, fontWeight: 700, color: GR, textTransform: "uppercase", textAlign: "center" } }, "Planlagt"),
+                React.createElement("div", { style: { width: 80, fontSize: 11, fontWeight: 700, color: GR, textTransform: "uppercase", textAlign: "center" } }, "Realiseret")),
+            KPI_ROWS.map(function (row) { return (React.createElement("div", { key: row, style: { display: "flex", gap: 8, marginBottom: 8, alignItems: "center" } },
+                React.createElement("div", { style: { flex: 1, fontSize: 13, fontWeight: 600, color: "#2d3748" } }, row),
+                React.createElement("input", { value: noegletal[row].plan, onChange: function (e) { return setN(row, "plan", e.target.value); }, style: { width: 80, padding: "8px 6px", borderRadius: 8, border: "1.5px solid #E5E9F0", fontSize: 16, outline: "none", textAlign: "center" } }),
+                React.createElement("input", { value: noegletal[row].real, onChange: function (e) { return setN(row, "real", e.target.value); }, style: { width: 80, padding: "8px 6px", borderRadius: 8, border: "1.5px solid #E5E9F0", fontSize: 16, outline: "none", textAlign: "center" } }))); })),
+        React.createElement("div", { style: { background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 1px 8px rgba(0,0,0,0.07)", marginBottom: 12 } },
+            React.createElement("div", { style: { fontWeight: 800, fontSize: 15, color: "#2d3748", marginBottom: 14 } }, "2. Artikler til opt\u00E6lling & TTT (i dag)"),
+            TTT_CHECKS.map(function (c) { return (React.createElement("div", { key: c, onClick: function () { return setChecks(function (p) {
+                    var _a;
+                    return (__assign(__assign({}, p), (_a = {}, _a[c] = !p[c], _a)));
+                }); }, style: { display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid #F5F6F8", cursor: "pointer" } },
+                React.createElement("div", { style: { width: 24, height: 24, borderRadius: 7, flexShrink: 0, border: checks[c] ? "none" : "2px solid ".concat(B), background: checks[c] ? B : "#fff", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" } }, checks[c] && React.createElement("span", { style: { color: "#fff", fontSize: 14, fontWeight: 900 } }, "\u2713")),
+                React.createElement("span", { style: { fontSize: 13, color: "#2d3748", flex: 1 } }, c),
+                React.createElement("span", { style: { fontSize: 12, fontWeight: 700, color: checks[c] ? GN : R } }, checks[c] ? "Ja" : "Nej"))); }),
+            React.createElement("div", { style: { marginTop: 16 } },
+                React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: GR, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 10 } }, "TTT opt\u00E6llinger per afdeling"),
+                React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 } }, TTT_DEPTS.map(function (dept) { return (React.createElement("div", { key: dept, style: { display: "flex", flexDirection: "column", gap: 4 } },
+                    React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: "#4A5568" } }, dept),
+                    React.createElement("input", { type: "number", min: "0", value: counts[dept] || "", onChange: function (e) { return setCounts(function (p) {
+                            var _a;
+                            return (__assign(__assign({}, p), (_a = {}, _a[dept] = e.target.value, _a)));
+                        }); }, placeholder: "0", style: { padding: "8px 10px", borderRadius: 8, border: "1.5px solid #E5E9F0", fontSize: 16, outline: "none" } }))); })))),
+        React.createElement(PBtn, { label: "\uD83D\uDCE7 Send KPI til distriktschef", onClick: sendKPI, color: B, full: true }),
+        React.createElement("div", { style: { textAlign: "center", marginTop: 8, fontSize: 11, color: GR } },
+            "Sender til: ",
+            adminEmail),
+        showMailChoice && (React.createElement(React.Fragment, null,
+            React.createElement("div", { onClick: function () { return setShowMailChoice(false); }, style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 400 } }),
+            React.createElement("div", { style: { position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "22px 22px 0 0", padding: "20px 16px 36px", zIndex: 401, boxShadow: "0 -8px 40px rgba(0,0,0,0.18)", animation: "slideUp 0.28s ease" } },
+                React.createElement("div", { style: { width: 40, height: 4, background: "#E5E9F0", borderRadius: 2, margin: "0 auto 16px" } }),
+                React.createElement("div", { style: { fontWeight: 900, fontSize: 16, color: "#2d3748", marginBottom: 6 } }, "\u00C5bn med"),
+                React.createElement("div", { style: { fontSize: 13, color: GR, marginBottom: 20 } }, "V\u00E6lg hvilken e-mail app du vil bruge"),
+                React.createElement("a", { href: getGmailHref(), onClick: function () { return setShowMailChoice(false); }, style: { width: "100%", display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: 14, border: "1.5px solid #E5E9F0", background: "#fff", cursor: "pointer", marginBottom: 10, textDecoration: "none" } },
+                    React.createElement("img", { src: "https://www.google.com/s2/favicons?domain=gmail.com&sz=64", style: { width: 32, height: 32, borderRadius: 8 }, alt: "Gmail" }),
+                    React.createElement("div", { style: { textAlign: "left" } },
+                        React.createElement("div", { style: { fontWeight: 700, fontSize: 15, color: "#2d3748" } }, "Gmail"),
+                        React.createElement("div", { style: { fontSize: 12, color: GR } }, "\u00C5bner Gmail-appen"))),
+                React.createElement("button", { onClick: function () { return doSend(false); }, style: { width: "100%", display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: 14, border: "1.5px solid #E5E9F0", background: "#fff", cursor: "pointer", marginBottom: 10 } },
+                    React.createElement("div", { style: { width: 32, height: 32, borderRadius: 8, background: "#F0F2F5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 } }, "\u2709\uFE0F"),
+                    React.createElement("div", { style: { textAlign: "left" } },
+                        React.createElement("div", { style: { fontWeight: 700, fontSize: 15, color: "#2d3748" } }, "Standard e-mail"),
+                        React.createElement("div", { style: { fontSize: 12, color: GR } }, "\u00C5bner din standard e-mail app"))),
+                React.createElement("button", { onClick: function () { return setShowMailChoice(false); }, style: { width: "100%", padding: "12px", borderRadius: 12, border: "none", background: "#F0F2F5", color: GR, fontWeight: 700, fontSize: 14, cursor: "pointer" } }, "Annuller"))))));
+}
+function UsersScreen(_a) {
+    var users = _a.users, setUsers = _a.setUsers, lukkeplan = _a.lukkeplan, setLukkeplan = _a.setLukkeplan, currentUser = _a.currentUser;
+    var pending = users.filter(function (u) { return !u.approved && u.role !== "admin"; });
+    var approved = users.filter(function (u) { return u.approved && u.role !== "admin"; });
+    var eligible = users.filter(function (u) { return u.approved && ["salgsleder", "souschef", "butikschef"].includes(u.role); });
+    var days = next7();
+    var _b = __read(useState("users"), 2), tab = _b[0], setTab = _b[1];
+    var _c = __read(useState(false), 2), showAdd = _c[0], setShowAdd = _c[1];
+    var _d = __read(useState(""), 2), newName = _d[0], setNewName = _d[1], _e = __read(useState(""), 2), newUn = _e[0], setNewUn = _e[1], _f = __read(useState(""), 2), newPw = _f[0], setNewPw = _f[1], _g = __read(useState("butiksassistent"), 2), newRole = _g[0], setNewRole = _g[1], _h = __read(useState(""), 2), addErr = _h[0], setAddErr = _h[1];
+    var doAdd = function () { if (!newName.trim() || !newUn.trim() || !newPw.trim()) {
+        setAddErr("Udfyld alle felter");
+        return;
+    } if (users.find(function (x) { return x.username === newUn.trim(); })) {
+        setAddErr("Brugernavnet er allerede i brug");
+        return;
+    } setUsers(function (p) { return __spreadArray(__spreadArray([], __read(p), false), [{ id: Date.now(), name: newName.trim(), username: newUn.trim(), password: newPw, role: newRole, approved: true }], false); }); setNewName(""); setNewUn(""); setNewPw(""); setNewRole("butiksassistent"); setAddErr(""); setShowAdd(false); };
+    return (React.createElement("div", { style: { padding: "16px", paddingBottom: 40 } },
+        React.createElement("div", { style: { display: "flex", background: "#fff", borderRadius: 12, padding: 4, marginBottom: 16, gap: 4, boxShadow: "0 1px 6px rgba(0,0,0,0.07)" } }, [["users", "👥 Brugere"], ["lukke", "🔑 Lukkeansvarlig"]].map(function (_a) {
+            var _b = __read(_a, 2), t = _b[0], l = _b[1];
+            return (React.createElement("button", { key: t, onClick: function () { return setTab(t); }, style: { flex: 1, padding: "9px", borderRadius: 9, border: "none", cursor: "pointer", background: tab === t ? B : "transparent", color: tab === t ? "#fff" : GR, fontWeight: 700, fontSize: 13 } }, l));
+        })),
+        tab === "users" && (React.createElement(React.Fragment, null,
+            pending.length > 0 && (React.createElement(React.Fragment, null,
+                React.createElement("div", { style: { fontSize: 11, fontWeight: 800, color: R, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 } },
+                    "\u23F3 Afventer godkendelse (",
+                    pending.length,
+                    ")"),
+                pending.map(function (u) { return (React.createElement("div", { key: u.id, style: { background: "#fff", borderRadius: 14, padding: "14px 16px", marginBottom: 8, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", border: "1px solid ".concat(Y) } },
+                    React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 } },
+                        React.createElement("div", null,
+                            React.createElement("div", { style: { fontWeight: 800, fontSize: 15 } }, u.name),
+                            React.createElement("div", { style: { fontSize: 12, color: GR } },
+                                "@",
+                                u.username)),
+                        React.createElement(Badge, { role: u.role })),
+                    React.createElement("div", { style: { display: "flex", gap: 8 } },
+                        React.createElement(PBtn, { label: "\u2713 Godkend", onClick: function () { return setUsers(function (p) { return p.map(function (x) { return x.id === u.id ? __assign(__assign({}, x), { approved: true }) : x; }); }); }, color: GN, small: true }),
+                        React.createElement(OBtn, { label: "\u2717 Afvis", onClick: function () { return setUsers(function (p) { return p.filter(function (x) { return x.id !== u.id; }); }); }, color: R, small: true })))); }),
+                React.createElement("div", { style: { height: 1, background: "#E5E9F0", margin: "12px 0" } }))),
+            React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 } },
+                React.createElement("div", { style: { fontSize: 11, fontWeight: 800, color: GR, textTransform: "uppercase", letterSpacing: 1 } },
+                    "Aktive brugere (",
+                    approved.length,
+                    ")"),
+                can(currentUser.role).users && React.createElement("button", { onClick: function () { setShowAdd(function (v) { return !v; }); setAddErr(""); }, style: { display: "flex", alignItems: "center", gap: 6, background: showAdd ? "#F0F2F5" : B, color: showAdd ? GR : "#fff", border: "none", borderRadius: 10, padding: "7px 14px", fontWeight: 700, fontSize: 13, cursor: "pointer", boxShadow: showAdd ? "none" : "0 2px 8px ".concat(B, "40") } }, showAdd ? "✕ Annuller" : "+ Tilføj bruger")),
+            showAdd && (React.createElement("div", { style: { background: "#fff", borderRadius: 16, padding: "18px 16px", marginBottom: 12, boxShadow: "0 2px 12px rgba(0,80,170,0.12)", border: "2px solid ".concat(B, "20") } },
+                React.createElement("div", { style: { fontWeight: 800, fontSize: 15, color: "#2d3748", marginBottom: 14 } }, "Opret ny bruger"),
+                addErr && React.createElement("div", { style: { background: "#FFF0F0", border: "1px solid ".concat(R, "40"), borderRadius: 8, padding: "8px 12px", color: R, fontSize: 13, fontWeight: 600, marginBottom: 12 } }, addErr),
+                React.createElement(Inp, { label: "Fulde navn", value: newName, onChange: setNewName, placeholder: "Medarbejderens navn" }),
+                React.createElement(Inp, { label: "Brugernavn", value: newUn, onChange: setNewUn, placeholder: "f.eks. fornavn.efternavn" }),
+                React.createElement(Inp, { label: "Adgangskode", value: newPw, onChange: setNewPw, type: "password", placeholder: "V\u00E6lg en adgangskode" }),
+                React.createElement("div", { style: { marginBottom: 14 } },
+                    React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: GR, marginBottom: 5, textTransform: "uppercase", letterSpacing: 0.8 } }, "Rolle"),
+                    React.createElement("select", { value: newRole, onChange: function (e) { return setNewRole(e.target.value); }, style: { width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E9F0", fontSize: 14, background: "#fff", color: "#2d3748" } }, SELECTABLE.map(function (r) { return React.createElement("option", { key: r, value: r }, ROLE_LABEL[r]); }))),
+                React.createElement(PBtn, { label: "Opret bruger", onClick: doAdd, color: B, full: true }))),
+            approved.map(function (u) { return (React.createElement("div", { key: u.id, style: { background: "#fff", borderRadius: 14, padding: "14px 16px", marginBottom: 8, boxShadow: "0 1px 6px rgba(0,0,0,0.07)" } },
+                React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 } },
+                    React.createElement("div", null,
+                        React.createElement("div", { style: { fontWeight: 800, fontSize: 15 } }, u.name),
+                        React.createElement("div", { style: { fontSize: 12, color: GR } },
+                            "@",
+                            u.username)),
+                    React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+                        React.createElement(Badge, { role: u.role }),
+                        can(currentUser.role).deleteUser && u.id !== currentUser.id && React.createElement("button", { onClick: function () { if (window.confirm("Slet ".concat(u.name, "?")))
+                                setUsers(function (p) { return p.filter(function (x) { return x.id !== u.id; }); }); }, style: { background: "#FFF0F0", border: "none", borderRadius: 8, padding: "5px 10px", cursor: "pointer", color: R, fontWeight: 700, fontSize: 12 } }, "\uD83D\uDDD1"))),
+                can(currentUser.role).settings && React.createElement("select", { value: u.role, onChange: function (e) { return setUsers(function (p) { return p.map(function (x) { return x.id === u.id ? __assign(__assign({}, x), { role: e.target.value }) : x; }); }); }, style: { width: "100%", padding: "7px 10px", borderRadius: 8, border: "1.5px solid #E5E9F0", fontSize: 13, color: "#2d3748" } }, SELECTABLE.map(function (r) { return React.createElement("option", { key: r, value: r }, ROLE_LABEL[r]); })))); }))),
+        tab === "lukke" && (React.createElement(React.Fragment, null,
+            React.createElement("div", { style: { fontSize: 11, fontWeight: 800, color: GR, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 } }, "Tildel lukkeansvarlig (op til 7 dage frem)"),
+            days.map(function (day) { var _a; return (React.createElement("div", { key: day.key, style: { background: "#fff", borderRadius: 14, padding: "14px 16px", marginBottom: 8, boxShadow: "0 1px 6px rgba(0,0,0,0.07)" } },
+                React.createElement("div", { style: { fontWeight: 700, fontSize: 14, color: "#2d3748", marginBottom: 8 } }, day.label),
+                React.createElement("select", { value: lukkeplan[day.key] || "", onChange: function (e) { return setLukkeplan(function (p) {
+                        var _a;
+                        return (__assign(__assign({}, p), (_a = {}, _a[day.key] = e.target.value, _a)));
+                    }); }, style: { width: "100%", padding: "8px 10px", borderRadius: 8, border: "1.5px solid #E5E9F0", fontSize: 13, color: "#2d3748" } },
+                    React.createElement("option", { value: "" }, "\u2014 Ingen tildelt \u2014"),
+                    eligible.map(function (u) { return React.createElement("option", { key: u.id, value: u.id },
+                        u.name,
+                        " (",
+                        ROLE_LABEL[u.role],
+                        ")"); })),
+                lukkeplan[day.key] && React.createElement("div", { style: { marginTop: 6, fontSize: 12, color: GN, fontWeight: 600 } },
+                    "\uD83D\uDD11 ", (_a = eligible.find(function (u) { return String(u.id) === String(lukkeplan[day.key]); })) === null || _a === void 0 ? void 0 :
+                    _a.name))); })))));
+}
+function SettingsScreen() {
+    return (React.createElement("div", { style: { padding: 16 } },
+        React.createElement("div", { style: { background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 1px 8px rgba(0,0,0,0.07)" } },
+            React.createElement("div", { style: { fontWeight: 800, fontSize: 16, color: "#2d3748", marginBottom: 4 } }, "\u2699\uFE0F Systemindstillinger"),
+            React.createElement("div", { style: { fontSize: 13, color: GR, marginBottom: 12 } }, "KPI sendes automatisk til:"),
+            React.createElement("div", { style: { background: LT, borderRadius: 10, padding: "12px 14px", fontSize: 14, fontWeight: 700, color: B } }, "\uD83D\uDCE7 Magnus.lindberg@lidl.dk"))));
+}
+function App() {
+    var today = new Date().toLocaleDateString("da-DK");
+    var load = function (key, def) { try {
+        var v = localStorage.getItem(key);
+        return v ? JSON.parse(v) : def;
+    }
+    catch (_a) {
+        return def;
+    } };
+    var save = function (key, val) { try {
+        localStorage.setItem(key, JSON.stringify(val));
+    }
+    catch (_a) { } };
+    var _a = __read(useState(function () { return load("lb_users", INIT_USERS); }), 2), users = _a[0], setUsers = _a[1];
+    var _b = __read(useState(function () {
+        var saved = load("lb_currentUser", null);
+        if (!saved)
+            return null;
+        var allUsers = load("lb_users", INIT_USERS);
+        return allUsers.find(function (u) { return u.id === saved.id && u.approved; }) || null;
+    }), 2), currentUser = _b[0], setCurrentUser = _b[1];
+    var _c = __read(useState("home"), 2), screen = _c[0], setScreen = _c[1];
+    var _d = __read(useState(false), 2), menuOpen = _d[0], setMenuOpen = _d[1];
+    var _e = __read(useState(function () {
+        var saved = load("lb_checked_date", "");
+        return saved === today ? load("lb_checked", {}) : {};
+    }), 2), checked = _e[0], setChecked = _e[1];
+    var _f = __read(useState(function () {
+        var saved = load("lb_approvals_date", "");
+        return saved === today ? load("lb_approvals", {}) : {};
+    }), 2), approvals = _f[0], setApprovals = _f[1];
+    var _g = __read(useState(function () { return load("lb_lukkeplan", {}); }), 2), lukkeplan = _g[0], setLukkeplan = _g[1];
+    var adminEmail = "Magnus.lindberg@lidl.dk";
+    var _h = __read(useState(false), 2), notifOpen = _h[0], setNotifOpen = _h[1];
+    var _j = __read(useState(function () {
+        var saved = load("lb_dismissed_date", "");
+        return saved === today ? load("lb_dismissed", {}) : {};
+    }), 2), dismissed = _j[0], setDismissed = _j[1];
+    useEffect(function () { return save("lb_users", users); }, [users]);
+    useEffect(function () { return save("lb_currentUser", currentUser); }, [currentUser]);
+    useEffect(function () { save("lb_checked", checked); save("lb_checked_date", today); }, [checked]);
+    useEffect(function () { save("lb_approvals", approvals); save("lb_approvals_date", today); }, [approvals]);
+    useEffect(function () { return save("lb_lukkeplan", lukkeplan); }, [lukkeplan]);
+    useEffect(function () { save("lb_dismissed", dismissed); save("lb_dismissed_date", today); }, [dismissed]);
+    if (!currentUser)
+        return React.createElement(LoginScreen, { users: users, setUsers: setUsers, onLogin: function (u) { setCurrentUser(u); setScreen("home"); setDismissed([]); } });
+    var p = can(currentUser.role);
+    var getNotifications = function () {
+        var _a, _b, _c, _d;
+        var notifs = [];
+        var now = new Date();
+        var totalMins = now.getHours() * 60 + now.getMinutes();
+        var todayKey = now.toLocaleDateString("da-DK");
+        if (p.users) {
+            var pending = users.filter(function (u) { return !u.approved && u.role !== "admin"; });
+            if (pending.length > 0)
+                notifs.push({ key: "pending-users", type: "warning", icon: "👤", title: "".concat(pending.length, " bruger").concat(pending.length > 1 ? "e" : "", " afventer godkendelse"), body: pending.map(function (u) { return u.name; }).join(", ") });
+        }
+        if (p.approve) {
+            AREAS.forEach(function (area) { var done = area.tasks.filter(function (t) { return checked[t.id]; }).length; if (done === area.tasks.length && !approvals[area.id])
+                notifs.push({ key: "ready-".concat(area.id), type: "info", icon: area.emoji, title: "".concat(area.title, " klar til godkendelse"), body: "Alle opgaver er gennemført — afventer din godkendelse" }); });
+        }
+        var bo1Done = ((_a = AREAS.find(function (a) { return a.id === "bo1"; })) === null || _a === void 0 ? void 0 : _a.tasks.filter(function (t) { return checked[t.id]; }).length) || 0, bo1Total = ((_b = AREAS.find(function (a) { return a.id === "bo1"; })) === null || _b === void 0 ? void 0 : _b.tasks.length) || 1;
+        if (!approvals["bo1"] && totalMins >= 540 && totalMins < 630)
+            notifs.push({ key: "bo1-deadline", type: "warning", icon: "⏰", title: "BakeOff Morgen: Deadline nærmer sig (kl. 10:00)", body: "".concat(bo1Done, "/").concat(bo1Total, " opgaver gennemf\u00F8rt") });
+        var bo2Done = ((_c = AREAS.find(function (a) { return a.id === "bo2"; })) === null || _c === void 0 ? void 0 : _c.tasks.filter(function (t) { return checked[t.id]; }).length) || 0, bo2Total = ((_d = AREAS.find(function (a) { return a.id === "bo2"; })) === null || _d === void 0 ? void 0 : _d.tasks.length) || 1;
+        if (!approvals["bo2"] && totalMins >= 840 && totalMins < 960)
+            notifs.push({ key: "bo2-deadline", type: "warning", icon: "⏰", title: "BakeOff kl. 13:00: Deadline nærmer sig (kl. 16:00)", body: "".concat(bo2Done, "/").concat(bo2Total, " opgaver gennemf\u00F8rt") });
+        if (p.users && !lukkeplan[todayKey])
+            notifs.push({ key: "lukke-mangler", type: "error", icon: "🔑", title: "Ingen lukkeansvarlig tildelt i dag", body: "Gå til Brugere & Lukkeansvarlig for at tildele" });
+        if (AREAS.every(function (a) { return approvals[a.id]; }))
+            notifs.push({ key: "all-done", type: "success", icon: "🎉", title: "Alle områder godkendt!", body: "Fremragende arbejde — alle daglige opgaver er afsluttet" });
+        return notifs;
+    };
+    var allNotifs = getNotifications();
+    var visibleNotifs = allNotifs.filter(function (n) { return !dismissed.includes(n.key); });
+    var dismissNotif = function (key) { return setDismissed(function (p) { return __spreadArray(__spreadArray([], __read(p), false), [key], false); }); };
+    var menuItems = [{ id: "home", icon: "📋", label: "Daglige opgaver", show: true }, { id: "kpi", icon: "📊", label: "KPI Opfølgning", show: p.kpi }, { id: "easyplu", logo: "https://www.google.com/s2/favicons?domain=easy-plu.knowledge-hero.com&sz=64", label: "Easy-PLU", show: true, external: "https://easy-plu.knowledge-hero.com/login" }, { id: "lukke", icon: "🌙", label: "Lukke-opgaver", show: true, coming: true }, { id: "users", icon: "👥", label: "Brugere & Lukkeansvarlig", show: p.users }, { id: "stats", icon: "📈", label: "Statistik", show: p.stats, coming: true }, { id: "settings", icon: "⚙️", label: "Indstillinger", show: p.settings }];
+    var screenTitle = { home: "Daglige opgaver", kpi: "KPI Opfølgning", users: "Brugere", lukke: "Lukke-opgaver", stats: "Statistik", settings: "Indstillinger" };
+    return (React.createElement("div", { style: { minHeight: "100vh", background: LT, color: "#1a1a2e" } },
+        menuOpen && React.createElement("div", { onClick: function () { return setMenuOpen(false); }, style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 200 } }),
+        React.createElement("div", { style: { position: "fixed", top: 0, left: 0, bottom: 0, width: 280, background: "#fff", zIndex: 300, transform: menuOpen ? "translateX(0)" : "translateX(-100%)", transition: "transform 0.28s ease", boxShadow: "4px 0 24px rgba(0,0,0,0.15)", display: "flex", flexDirection: "column" } },
+            React.createElement("div", { style: { background: B, padding: "20px 16px 16px", display: "flex", alignItems: "center", gap: 12 } },
+                React.createElement(LidlEmblem, { size: 44 }),
+                React.createElement("div", null,
+                    React.createElement("div", { style: { color: Y, fontSize: 10, fontWeight: 800, letterSpacing: 2, textTransform: "uppercase" } }, "Lidl Butiksdrift"),
+                    React.createElement("div", { style: { color: "#fff", fontWeight: 800, fontSize: 15 } }, currentUser.name),
+                    React.createElement(Badge, { role: currentUser.role }))),
+            React.createElement("div", { style: { flex: 1, overflowY: "auto", padding: "12px 8px" } }, menuItems.filter(function (m) { return m.show; }).map(function (item) { return (React.createElement("button", { key: item.id, onClick: function () { if (item.external) {
+                    window.open(item.external, "_blank");
+                    setMenuOpen(false);
+                }
+                else if (!item.coming) {
+                    setScreen(item.id);
+                    setMenuOpen(false);
+                }
+                else {
+                    setMenuOpen(false);
+                } }, style: { width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 12, border: "none", cursor: "pointer", marginBottom: 4, textAlign: "left", background: screen === item.id && !item.coming && !item.external ? "".concat(B, "12") : "transparent", color: screen === item.id && !item.coming && !item.external ? B : "#2d3748" } },
+                item.logo ? React.createElement("img", { src: item.logo, style: { width: 24, height: 24, borderRadius: 5, objectFit: "contain", background: "#fff", padding: 2 }, alt: "" }) : React.createElement("span", { style: { fontSize: 20 } }, item.icon),
+                React.createElement("span", { style: { fontWeight: 700, fontSize: 14, flex: 1 } }, item.label),
+                item.coming && React.createElement("span", { style: { fontSize: 10, background: "#F0F2F5", color: GR, padding: "2px 6px", borderRadius: 8, fontWeight: 700 } }, "Snart"),
+                item.external && React.createElement("span", { style: { fontSize: 11, color: GR } }, "\u2197"))); })),
+            React.createElement("div", { style: { padding: "12px 8px", borderTop: "1px solid #F0F2F5" } },
+                React.createElement("button", { onClick: function () { setCurrentUser(null); setMenuOpen(false); setScreen("home"); }, style: { width: "100%", padding: "12px 16px", borderRadius: 12, border: "none", cursor: "pointer", background: "#FFF0F0", color: R, fontWeight: 700, fontSize: 14, textAlign: "left", display: "flex", alignItems: "center", gap: 12 } },
+                    React.createElement("span", null, "\uD83D\uDEAA"),
+                    " Log ud"))),
+        React.createElement("div", { style: { background: B, padding: "0 16px", boxShadow: "0 2px 12px rgba(0,80,170,0.25)", position: "sticky", top: 0, zIndex: 100 } },
+            React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12, height: 62 } },
+                React.createElement("button", { onClick: function () { return setMenuOpen(true); }, style: { background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5 } },
+                    React.createElement("div", { style: { width: 22, height: 2, background: "#fff", borderRadius: 2 } }),
+                    React.createElement("div", { style: { width: 16, height: 2, background: Y, borderRadius: 2 } }),
+                    React.createElement("div", { style: { width: 22, height: 2, background: "#fff", borderRadius: 2 } })),
+                React.createElement("div", { style: { flex: 1 } },
+                    React.createElement("div", { style: { color: Y, fontSize: 10, fontWeight: 800, letterSpacing: 2, textTransform: "uppercase" } }, "Lidl Butiksdrift"),
+                    React.createElement("div", { style: { color: "#fff", fontSize: 16, fontWeight: 800 } }, screenTitle[screen])),
+                React.createElement("div", { style: { textAlign: "right" } },
+                    React.createElement("div", { style: { color: "#fff", fontSize: 12, fontWeight: 700, opacity: 0.9 } }, currentUser.name),
+                    React.createElement(Badge, { role: currentUser.role }))),
+            React.createElement("div", { style: { height: 3, background: "rgba(255,255,255,0.2)", marginBottom: 10, borderRadius: 2 } },
+                React.createElement("div", { style: { height: "100%", borderRadius: 2, width: "".concat(AREAS.reduce(function (a, ar) { return a + ar.tasks.filter(function (t) { return checked[t.id]; }).length; }, 0) / AREAS.reduce(function (a, ar) { return a + ar.tasks.length; }, 0) * 100 || 0, "%"), background: Y, transition: "width 0.4s" } }))),
+        screen === "home" && React.createElement(HomeScreen, { user: currentUser, checked: checked, setChecked: setChecked, approvals: approvals, setApprovals: setApprovals }),
+        screen === "kpi" && p.kpi && React.createElement(KPIScreen, { user: currentUser, adminEmail: adminEmail }),
+        screen === "users" && p.users && React.createElement(UsersScreen, { users: users, setUsers: setUsers, lukkeplan: lukkeplan, setLukkeplan: setLukkeplan, currentUser: currentUser }),
+        screen === "settings" && p.settings && React.createElement(SettingsScreen, null),
+        screen === "lukke" && React.createElement(ComingSoon, { icon: "\uD83C\uDF19", title: "Lukke-opgaver", sub: "Tilf\u00F8jes n\u00E5r lukkelisten er klar" }),
+        screen === "stats" && React.createElement(ComingSoon, { icon: "\uD83D\uDCC8", title: "Statistik", sub: "Tilf\u00F8jes n\u00E5r dataaggregering er klar" }),
+        React.createElement(NotifBell, { count: visibleNotifs.length, onClick: function () { return setNotifOpen(function (o) { return !o; }); }, hasHome: screen === "home" }),
+        notifOpen && React.createElement(NotifPanel, { notifs: allNotifs, onClose: function () { return setNotifOpen(false); }, onDismiss: dismissNotif, dismissed: dismissed })));
+}
+ReactDOM.render(React.createElement(App, null), document.getElementById("root"));
+  </script>
+</body>
+</html>
